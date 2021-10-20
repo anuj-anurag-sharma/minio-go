@@ -110,11 +110,16 @@ func (p *FileAWSCredentials) Retrieve() (Value, error) {
 
 // IsExpired returns if the shared credentials have expired.
 func (p *FileAWSCredentials) IsExpired() bool {
-	fmt.Println("Checking if the creds have expired...Expiration Time is :"+p.expirationTime.String() +" Current time is : "+time.Now().String())
 	if !p.retrieved{
 		return true
 	}
-	return time.Now().After(p.expirationTime)
+	currTime := time.Now().UTC()
+	if 60*60 > p.expirationTime.Sub(currTime).Seconds() {
+		fmt.Println("Expiration Time("+p.expirationTime.String()+") - Current Time("+currTime.String() +") is less than 1 hour")
+		fmt.Println("Returning isExpired as true to reload credentials")
+		return true
+	}
+	return false
 }
 
 // loadProfiles loads from the file pointed to by shared credentials filename for profile.
