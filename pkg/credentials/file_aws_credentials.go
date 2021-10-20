@@ -18,8 +18,10 @@
 package credentials
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
+	"time"
 
 	homedir "github.com/mitchellh/go-homedir"
 	ini "gopkg.in/ini.v1"
@@ -45,6 +47,8 @@ type FileAWSCredentials struct {
 
 	// retrieved states if the credentials have been successfully retrieved.
 	retrieved bool
+
+	expirationTime time.Time
 }
 
 // NewFileAWSCredentials returns a pointer to a new Credentials object
@@ -89,6 +93,11 @@ func (p *FileAWSCredentials) Retrieve() (Value, error) {
 	secret := iniProfile.Key("aws_secret_access_key")
 	// Default to empty string if not found.
 	token := iniProfile.Key("aws_session_token")
+	// Default to empty string if not found.
+	expiration := iniProfile.Key("aws_expiration")
+	expirationTime,_ := time.Parse("2006-01-02T15:04:05Z", expiration.String())
+	p.expirationTime = expirationTime
+
 
 	p.retrieved = true
 	return Value{
@@ -101,7 +110,11 @@ func (p *FileAWSCredentials) Retrieve() (Value, error) {
 
 // IsExpired returns if the shared credentials have expired.
 func (p *FileAWSCredentials) IsExpired() bool {
-	return !p.retrieved
+	fmt.Println("Checking if the creds have expired...Expiration Time is :"+p.expirationTime.String() +" Current time is : "+time.Now().String())
+	if !p.retrieved{
+		return true
+	}
+	return time.Now().After(p.expirationTime)
 }
 
 // loadProfiles loads from the file pointed to by shared credentials filename for profile.
