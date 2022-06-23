@@ -89,6 +89,12 @@ var amazonS3HostHyphen = regexp.MustCompile(`^s3-(.*?).amazonaws.com$`)
 // amazonS3HostDualStack - regular expression used to determine if an arg is s3 host dualstack.
 var amazonS3HostDualStack = regexp.MustCompile(`^s3.dualstack.(.*?).amazonaws.com$`)
 
+// amazonS3HostFIPS - regular expression used to determine if an arg is s3 FIPS host.
+var amazonS3HostFIPS = regexp.MustCompile(`^s3-fips.(.*?).amazonaws.com$`)
+
+// amazonS3HostFIPSDualStack - regular expression used to determine if an arg is s3 FIPS host dualstack.
+var amazonS3HostFIPSDualStack = regexp.MustCompile(`^s3-fips.dualstack.(.*?).amazonaws.com$`)
+
 // amazonS3HostDot - regular expression used to determine if an arg is s3 host in . style.
 var amazonS3HostDot = regexp.MustCompile(`^s3.(.*?).amazonaws.com$`)
 
@@ -122,6 +128,18 @@ func GetRegionFromURL(endpointURL url.URL) string {
 	parts := amazonS3HostDualStack.FindStringSubmatch(endpointURL.Host)
 	if len(parts) > 1 {
 		return parts[1]
+	}
+	if IsAmazonFIPSUSEastWestEndpoint(endpointURL) {
+		// We check for FIPS dualstack matching first to avoid the non-greedy
+		// regex for FIPS non-dualstack matching a dualstack URL
+		parts = amazonS3HostFIPSDualStack.FindStringSubmatch(endpointURL.Host)
+		if len(parts) > 1 {
+			return parts[1]
+		}
+		parts = amazonS3HostFIPS.FindStringSubmatch(endpointURL.Host)
+		if len(parts) > 1 {
+			return parts[1]
+		}
 	}
 	parts = amazonS3HostHyphen.FindStringSubmatch(endpointURL.Host)
 	if len(parts) > 1 {
@@ -171,6 +189,7 @@ func IsAmazonFIPSGovCloudEndpoint(endpointURL url.URL) bool {
 		return false
 	}
 	return endpointURL.Host == "s3-fips-us-gov-west-1.amazonaws.com" ||
+		endpointURL.Host == "s3-fips.us-gov-west-1.amazonaws.com" ||
 		endpointURL.Host == "s3-fips.dualstack.us-gov-west-1.amazonaws.com"
 }
 

@@ -55,6 +55,10 @@ func TestGetRegionFromURL(t *testing.T) {
 			expectedRegion: "us-gov-west-1",
 		},
 		{
+			u:              url.URL{Host: "s3-fips.us-gov-west-1.amazonaws.com"},
+			expectedRegion: "us-gov-west-1",
+		},
+		{
 			u:              url.URL{Host: "s3-us-gov-west-1.amazonaws.com"},
 			expectedRegion: "us-gov-west-1",
 		},
@@ -98,6 +102,18 @@ func TestGetRegionFromURL(t *testing.T) {
 			u: url.URL{
 				Host: "s3.kubernetesfrontendlb-caf78da2b1f7516c.elb.amazonaws.com.cn",
 			},
+		},
+		{
+			u: url.URL{
+				Host: "s3-fips.us-east-1.amazonaws.com",
+			},
+			expectedRegion: "us-east-1",
+		},
+		{
+			u: url.URL{
+				Host: "s3-fips.dualstack.us-west-1.amazonaws.com",
+			},
+			expectedRegion: "us-west-1",
 		},
 	}
 
