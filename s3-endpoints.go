@@ -34,6 +34,7 @@ var awsS3EndpointMap = map[string]string{
 	"ap-south-1":     "s3.dualstack.ap-south-1.amazonaws.com",
 	"ap-southeast-1": "s3.dualstack.ap-southeast-1.amazonaws.com",
 	"ap-southeast-2": "s3.dualstack.ap-southeast-2.amazonaws.com",
+	"ap-southeast-3": "s3.dualstack.ap-southeast-3.amazonaws.com",
 	"ap-northeast-1": "s3.dualstack.ap-northeast-1.amazonaws.com",
 	"ap-northeast-2": "s3.dualstack.ap-northeast-2.amazonaws.com",
 	"ap-northeast-3": "s3.dualstack.ap-northeast-3.amazonaws.com",
